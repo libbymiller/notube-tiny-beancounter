@@ -1,0 +1,4 @@
+apt-get install ruby
+sudo gem install json_pure
+
+4store-ruby lib from http://github.com/moustaki/4store-ruby 
