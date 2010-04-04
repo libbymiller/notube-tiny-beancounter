@@ -1,5 +1,5 @@
 These utilities generate html and rdf weighted interest profiles from 
-BBC data using a SPARQL endpoint. It can take some minutes to run.
+BBC programmes data using a SPARQL endpoint. It can take some minutes to run.
 
 Files:
 
@@ -11,4 +11,6 @@ list of BBC pids (e.g. p006h6rl)
 generate a profile using the last 200 public tweets of a specified 
 username
 
-See INSTALL.txt for installation.
+It uses either Jruby and Jena or a ruby and a 4store instance. See 
+INSTALL.txt for installation.
+

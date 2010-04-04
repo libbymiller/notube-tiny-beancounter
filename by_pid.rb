@@ -1,4 +1,3 @@
-   require 'lib/four_store/store'
    require 'beancounter_utilities.rb'
 
       begin
@@ -9,7 +8,7 @@
                filename="profile"
                valscount = enhance_data(arr)
                str,str2=make_html_and_rdf(valscount)
-               save(str,"#{filename}.html")  
+               save(str,"#{filename}.html")
                save(str2,"#{filename}.rdf")
             end
          else
@@ -17,3 +16,4 @@
             puts "e.g. ruby by_pid.rb p006h6qq"
          end
       end
+

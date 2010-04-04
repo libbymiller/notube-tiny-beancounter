@@ -1,4 +1,48 @@
+No Four store instance available
+--------------------------------
+
+apt-get install jruby
+jruby -S gem install json_pure
+
+download jena from http://sourceforge.net/projects/jena/files/Jena/
+unzip it and put in a directory, editing
+
+   Dir.glob("Jena-2.6.2/lib/*.jar") { |jar| require jar }
+
+in beancounter_utilities.rb as needed
+
+Running
+-------
+
+jruby by_pid.rb p006h6qq
+jruby twitter_mini_beancounter.rb radioandtvbot
+
+
+OR 
+
+Four store instance available
+-----------------------------
+
 apt-get install ruby
 sudo gem install json_pure
 
 4store-ruby lib from http://github.com/moustaki/4store-ruby 
+
+edit this:
+
+      def use_store()
+         return false;
+      end
+            
+      def four_store_url()
+         return 'http://dbtune.org/bbc/programmes/sparql/'  
+      end
+
+
+Running
+-------
+
+ruby by_pid.rb p006h6qq
+ruby twitter_mini_beancounter.rb radioandtvbot
+
+
