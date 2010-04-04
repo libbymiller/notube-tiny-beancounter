@@ -21,10 +21,6 @@
          return false;
       end
 
-      def four_store_url()
-         return 'http://dbtune.org/bbc/programmes/sparql/'
-      end
-
 # Takes the urls from the enhancement, gets labels and types for them, 
 # and generates some html and RDF
 
@@ -38,7 +34,7 @@
 
          if (use_store())
             require 'lib/four_store/store'
-            store = FourStore::Store.new four_store_url()
+            store = FourStore::Store.new 'http://dbtune.org/bbc/programmes/sparql/'
             valscount.each_key do |url|
                q = "SELECT distinct ?label ?type WHERE { <#{url}> <http://www.w3.org/2000/01/rdf-schema#label> ?label .}"
                q2 = "SELECT distinct ?label ?type WHERE {<#{url}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type .}"
@@ -76,9 +72,19 @@
                if url.match("service")
                   label = url.gsub(/\#.*/,"")
                   label = label.gsub(/http:\/\/www\.bbc\.co\.uk\//,"")
-                  types[url]="http://purl.org/ontology/po/Service"   
-                  types_urls["http://purl.org/ontology/po/Service"]=url
+                  ty = "http://purl.org/ontology/po/Service"
+                  types[url]=ty
                   labels[url]=label
+
+                  if(types_urls[ty]==nil)
+                     arr = Array.new
+                     arr.push(url)
+                     types_urls[ty]=arr
+                  else
+                     arr = types_urls[ty]
+                     arr.push(url)
+                  end
+
                else
                   uu = url.gsub(/\#.*$/,".rdf")
 
@@ -96,6 +102,7 @@
 #                 ResultSetFormatter.out(java.lang.System.out, response2)
 
 # Get types
+
                   response2.each do |r|
                      ty = r.get("type").to_s
                      types[url] = ty
@@ -134,8 +141,9 @@
               label = labels[uu]  
               c = valscount[uu]
               cc = cc + c
-              str = "#{str} #{label} #{c} <br />\n"
+              str = "#{str} <a href='#{uu}'>#{label}</a>: #{c} <br />\n"
             end
+
             str = str + "</p>\n"
             
          end
@@ -212,7 +220,8 @@ xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"
 ####
             if (use_store())
                require 'lib/four_store/store'
-               store = FourStore::Store.new four_store_url()
+               store = FourStore::Store.new 'http://dbtune.org/bbc/programmes/sparql/'
+
 
                arr.each do |pid|
 
