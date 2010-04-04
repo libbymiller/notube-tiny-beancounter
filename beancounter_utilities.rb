@@ -68,11 +68,28 @@
             valscount.each_key do |url|
                puts "valscount url is  #{url}"
 #serivces are problematic in the url retrival case so we bypass them
-
+#genres can also be problematic
+# http://www.bbc.co.uk/programmes/genres/comedy/
                if url.match("service")
                   label = url.gsub(/\#.*/,"")
                   label = label.gsub(/http:\/\/www\.bbc\.co\.uk\//,"")
                   ty = "http://purl.org/ontology/po/Service"
+                  types[url]=ty
+                  labels[url]=label
+
+                  if(types_urls[ty]==nil)
+                     arr = Array.new
+                     arr.push(url)
+                     types_urls[ty]=arr
+                  else
+                     arr = types_urls[ty]
+                     arr.push(url)
+                  end
+
+               elsif url.match("genres")
+                  label = url.gsub(/\#.*/,"")
+                  label = label.gsub(/http:\/\/www\.bbc\.co\.uk\/programmes\/genres\//,"")
+                  ty = "http://purl.org/ontology/po/Genre"
                   types[url]=ty
                   labels[url]=label
 
@@ -229,8 +246,10 @@ xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"
 {{<http://www.bbc.co.uk/programmes/#{pid}#programme>
 <http://purl.org/ontology/po/masterbrand> ?vals .} UNION
 {<http://www.bbc.co.uk/programmes/#{pid}#programme>
-<http://purl.org/ontology/po/category> ?vals . } UNION {?vals
-<http://purl.org/ontology/po/episode>
+<http://purl.org/ontology/po/category> ?vals . } UNION 
+{<http://www.bbc.co.uk/programmes/#{pid}#programme> 
+<http://purl.org/ontology/po/genre> ?vals . } UNION 
+{?vals <http://purl.org/ontology/po/episode>
 <http://www.bbc.co.uk/programmes/#{pid}#programme> . }}"
 
                   puts "Making query for #{pid}\n#{q}"
@@ -254,31 +273,40 @@ xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"
 
                   url = "http://www.bbc.co.uk/programmes/#{pid}.rdf"
                   puts "pid url is  #{url}"
+                  #occassionally we get a duff pid
+
                   m = ModelFactory.createDefaultModel()
-                  m.read(url)
-    
-                  q = "SELECT ?vals WHERE
+
+                  begin 
+                     m.read(url)
+     
+                     q = "SELECT ?vals WHERE
 {{<http://www.bbc.co.uk/programmes/#{pid}#programme>
 <http://purl.org/ontology/po/masterbrand> ?vals .} UNION
 {<http://www.bbc.co.uk/programmes/#{pid}#programme>
-<http://purl.org/ontology/po/category> ?vals . } UNION {?vals
-<http://purl.org/ontology/po/episode>
+<http://purl.org/ontology/po/category> ?vals . } UNION 
+{<http://www.bbc.co.uk/programmes/#{pid}#programme> 
+<http://purl.org/ontology/po/genre> ?vals . } UNION 
+{?vals <http://purl.org/ontology/po/episode>
 <http://www.bbc.co.uk/programmes/#{pid}#programme> . }}"
-                  puts "Making query for #{pid}\n#{q}"
+                     puts "Making query for #{pid}\n#{q}"
 
-                  qexec = QueryExecutionFactory.create(q, m) ;
-                  response = qexec.execSelect()
-#                 ResultSetFormatter.out(java.lang.System.out, response)
-                  response.each do |r|
-                     url = r.get("vals").to_s
-                     puts "got result #{url}"
-                     if(valscount[url]==nil)
-                        valscount[url]=1
-                     else
-                        count = valscount[url]
-                        count = count+1
-                        valscount[url]=count
+                     qexec = QueryExecutionFactory.create(q, m) ;
+                     response = qexec.execSelect()
+#                    ResultSetFormatter.out(java.lang.System.out, response)
+                     response.each do |r|
+                        url = r.get("vals").to_s
+                        puts "got result #{url}"
+                        if(valscount[url]==nil)
+                           valscount[url]=1
+                        else
+                           count = valscount[url]
+                           count = count+1
+                           valscount[url]=count
+                        end
                      end
+                  rescue
+                    puts "duff url, continuing"
                   end
                   sleep 2
                end

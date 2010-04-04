@@ -50,7 +50,7 @@
    
    
 # run it
-
+=begin
       begin
          if (ARGV[0])
            twittername = ARGV[0]
@@ -70,3 +70,4 @@
            puts "Usage jruby twitter-mini-beancounter.rb twittername"
          end
       end
+=end
